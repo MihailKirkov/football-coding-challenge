@@ -1,6 +1,6 @@
 import { Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
-
+import { t } from "../../i18n/util"; 
 
 interface Club {
     id: string;
@@ -35,11 +35,11 @@ const ClubRow = (props: clubRowProps) => {
             <Box className=''>
                     <Typography variant="h6" fontWeight={600}>
                         <Link to={`/detailsview/${club.id}`} style={{textDecoration:'none', color:'inherit'}}>
-                            {club.name || 'Unknown name'}
+                            {club.name || t("error.unknownName")}
                         </Link>
                     </Typography>
                 <Typography variant="body1" className=''>
-                    {club?.country || 'Unknown country'} ${club?.value || 'Unknown value'} Millionen Euro
+                    <strong>{club?.country || t("error.unknownCountry")}</strong> ${club?.value || t("error.unknownValue")}  { t("club.value")}
                 </Typography>
             </Box>
         </Box>

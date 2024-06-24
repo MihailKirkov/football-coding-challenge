@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { fetchClubById } from '../../lib/api';
 import ClubPageNavbar from './ClubPageNavbar';
+import { t, tHtml } from "../../i18n/util"; 
 
 interface Club {
     id: string;
@@ -25,8 +26,8 @@ const ClubPage = () => {
                 setLoading(true);
                 console.log('fetching with id:', clubId);
                 if (clubId) {
-                  const clubData = await fetchClubById(clubId);
-                  if (clubData) setClub(clubData);
+                    const clubData = await fetchClubById(clubId);
+                    if (clubData) setClub(clubData);
                 }
             } catch (error) {
                 setError('Failed to fetch club data');
@@ -42,11 +43,11 @@ const ClubPage = () => {
     }
 
     if (error) {
-        return <Typography variant="h6" color="error">{error}</Typography>;
+        return <Typography variant="h3" color="error">{error}</Typography>;
     }
 
     if (!club) {
-        return <Typography variant="h6">Club not found</Typography>;
+        return <Typography variant="h3">Club not found</Typography>;
     }
 
     return (
@@ -60,15 +61,20 @@ const ClubPage = () => {
             </Box>
             <Box style={{ padding: '1rem' }}>
                 <Typography variant="body1">
-                    Der Club <strong>{club.name}</strong> aus {club.country} hat einen Wert von <strong>{club.value} Millionen Euro</strong>.
+                    {/* Der Club <b>{club.name}</b> aus {club.country} hat einen Wert von {club.value} Millionen Euro. */}
+                    {tHtml("club.detail.text", {
+                        name: club.name || t("error.unknownName"),
+                        country: club.country || t("error.unknownCountry"),
+                        value: club.value || t("error.unknownValue"),
+                    })}
                 </Typography>
-                {/* {club.european_titles !== undefined && (
+                
+                {club?.european_titles && club?.european_titles > 0 &&
                     <Typography variant="body1">
-                        {`Der Club ${club.name} hat so far ${club.european_titles} victories at European level.`}
+                        {tHtml("club.detail.european_titles", { name: club.name, europeanTitles: club.european_titles })}
                     </Typography>
-                )} */}
+                }
             </Box>
-            
         </Box>
     );
 };

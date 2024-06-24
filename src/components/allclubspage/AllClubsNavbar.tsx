@@ -1,34 +1,31 @@
 import SortIcon from '@mui/icons-material/Sort';
+import { AppBar, Box, IconButton, Toolbar, Typography } from '@mui/material';
+import { t } from "../../i18n/util"; 
 
 interface navbarProps {
     onSortClick: () => void;
 }
 
-const Navbar = (props: navbarProps) => {
+const AllClubsNavbar = (props: navbarProps) => {
     const {onSortClick} = props;
 
 
     return (
-        <div style={{
-            position:'sticky',
-            width:'100dvw',
-            height:'6dvh',
-            top:0,
-            left:0,
-            backgroundColor:'#01C13B',
-            display:'flex',
-            justifyContent:'space-between',
-            alignItems:'center',
-            padding: 24,
-            color:'white',
-            fontWeight:'500'
-        }}>
-            <span>all about clubs</span>
+        <Box sx={{ position:'sticky', height:'6dvh' }}>
+        <AppBar sx={{ backgroundColor: '#01C13B', color:'white' }}>
+            <Toolbar sx={{display: 'flex', justifyContent:'space-between'}}>
+                <Typography variant='h6'>
+                {t("app.navbarTitle")}
+                </Typography>
 
-
-            <SortIcon onClick={onSortClick} style={{cursor:'pointer'}}/>
-        </div>
+                <IconButton style={{color:'inherit'}}>
+                    <SortIcon onClick={onSortClick} style={{cursor:'pointer'}}/>
+                </IconButton>
+            </Toolbar>
+        </AppBar>
+        </Box>
+        
     )
 }
 
-export default Navbar
+export default AllClubsNavbar

@@ -1,24 +1,11 @@
-// import { Button } from "@mui/material";
-// import { Field, Form, Formik } from "formik";
 import * as React from "react";
-// import * as Yup from "yup";
-// import { t } from "../../i18n/util";
-// import { useLogin } from "../../network/api/useLogin";
-import { useAuthStore } from "../../stores/authStore";
-// import { useGeneralStore } from "../../stores/generalStore";
-// import { usePushRoute } from "../app/router/history";
-// import { DashboardRoutes } from "../dashboard/router/DashboardRoutes";
-// import { CustomInputField } from "../ui/CustomInputField";
-// import { Colors } from "../util/Colors";
-// import { ImageLogo } from "../util/Images";
-import Navbar from "./AllClubsNavbar";
+import AllClubsNavbar from "./AllClubsNavbar";
 import ClubRow from "./ClubRow";
 import { fetchClubsData } from "../../lib/api";
+import { useGeneralStore } from "../../stores/generalStore";
+import { t } from "../../i18n/util";
+import { Typography } from "@mui/material";
 
-// interface ILoginValues {
-//     email: string;
-//     password: string;
-// }
 
 interface Club {
     id: string;
@@ -31,18 +18,13 @@ interface Club {
 
 
 export const AllClubsPage = () => {
-    // const [error, setError] = React.useState<string>();
+    const [error, setError] = React.useState<string>();
     const [clubs, setClubs] = React.useState<Club[]>();
     const [currentSort, setCurrentSort] = React.useState<"name" | "value">(() => {
         return localStorage.getItem("currentSort") as "name" | "value" || "name";
     });
-    // const pushRoute = usePushRoute();
 
-    const isRehydrated = useAuthStore.persist.hasHydrated();
-
-    // const loginMutation = useLogin();
-
-    // const setIsLoading = useGeneralStore((state) => state.setIsLoading);
+    const setIsLoading = useGeneralStore((state) => state.setIsLoading);
 
     const handleSort = () => {
         if (clubs) {
@@ -56,27 +38,15 @@ export const AllClubsPage = () => {
                     setClubs(sortedByValue);
                     break;
                 default:
-                    // Default to sorting by name if currentSort is undefined or unexpected
+                    // Default to sorting by name
                     const defaultSorted = [...clubs].sort((a, b) => a.name.localeCompare(b.name));
                     setClubs(defaultSorted);
                     break;
             }
         }
-        // setIsLoading(true);
-        // setError("");
 
-        // try {
-        //     await loginMutation.mutateAsync({ username: model.email, password: model.password });
-        //     pushRoute(DashboardRoutes.ROOT);
-        // } catch (error) {
-        //     if (error instanceof AxiosError) {
-        //         setError(`${t("screen.login.error_during_login")}: ${error.response?.status}`);
-        //     }
-        // }
-
-        // setIsLoading(false);
     };
-
+    
     const changeSortType = () => {
         setCurrentSort((prevSort) => {
             const newSort = prevSort === "name" ? "value" : "name";
@@ -84,15 +54,18 @@ export const AllClubsPage = () => {
             return newSort;
         });
     }
-
+    
     const fetchData = async () => {
+        setIsLoading(true);
         try {
             const data = await fetchClubsData();
             setClubs(data);
-            console.log('d', data);
+            // console.log('data', data);
         } catch (error) {
             console.error('Fetching clubs data failed:', error);
+            setError(t("error.fetching_clubs"));
         }
+        setIsLoading(false);
     };
 
     React.useEffect(() => {
@@ -101,10 +74,10 @@ export const AllClubsPage = () => {
 
     React.useEffect(() => {
         if (clubs && clubs?.length > 0) handleSort();
-    }, [currentSort, clubs])
+    }, [currentSort])
 
-    if (!isRehydrated) {
-        return null;
+    if (error) {
+        return <Typography variant="h3" color="error">{error}</Typography>;
     }
 
     return (
@@ -112,10 +85,10 @@ export const AllClubsPage = () => {
         style={{
             margin:0,
             padding:0,
-            width:'100vw',
+            width:'100%',
         }}
         >
-            <Navbar onSortClick={changeSortType}/>
+            <AllClubsNavbar onSortClick={changeSortType}/>
             {clubs && clubs?.length > 0 &&
             <div style={{width:'100%', display:'flex', flexDirection:'column'}}>
                 {clubs.map((club, index) => (

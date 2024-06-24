@@ -1,5 +1,5 @@
 import { ArrowBack } from "@mui/icons-material"
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, IconButton, Toolbar, Typography } from "@mui/material"
 import { Link } from "react-router-dom"
 
 interface ClubPageNavbarProps {
@@ -8,18 +8,20 @@ interface ClubPageNavbarProps {
 
 const ClubPageNavbar = ( props: ClubPageNavbarProps  ) => {
     const { clubName } = props;
-  return (
-    <AppBar position="static" style={{ backgroundColor: '#01C13B', color:'white' }}>
-        <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="back" component={Link} to="/">
-                <ArrowBack />
-            </IconButton>
-            <Typography variant="h6">
-                {clubName}
-            </Typography>
-        </Toolbar>
-    </AppBar>
-  )
+    return (
+        <Box sx={{height:'6dvh'}}>
+        <AppBar position="sticky" sx={{ backgroundColor: '#01C13B', color:'white'}}>
+            <Toolbar>
+                <IconButton edge="start" color="inherit" aria-label="back" component={Link} to="/">
+                    <ArrowBack />
+                </IconButton>
+                <Typography variant="h6">
+                    {clubName}
+                </Typography>
+            </Toolbar>
+        </AppBar>
+        </Box>
+    )
 }
 
 export default ClubPageNavbar
