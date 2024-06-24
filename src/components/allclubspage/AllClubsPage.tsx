@@ -1,5 +1,4 @@
 // import { Button } from "@mui/material";
-import axios, { AxiosError } from "axios";
 // import { Field, Form, Formik } from "formik";
 import * as React from "react";
 // import * as Yup from "yup";
@@ -12,18 +11,31 @@ import { useAuthStore } from "../../stores/authStore";
 // import { CustomInputField } from "../ui/CustomInputField";
 // import { Colors } from "../util/Colors";
 // import { ImageLogo } from "../util/Images";
-import Navbar from "./Navbar";
+import Navbar from "./AllClubsNavbar";
 import ClubRow from "./ClubRow";
+import { fetchClubsData } from "../../lib/api";
 
 // interface ILoginValues {
 //     email: string;
 //     password: string;
 // }
 
+interface Club {
+    id: string;
+    name: string;
+    country: string;
+    value: number;
+    image: string;
+    european_titles?: number;
+}
+
+
 export const AllClubsPage = () => {
     // const [error, setError] = React.useState<string>();
-    const [clubs, setClubs] = React.useState<[]>();
-    const [currentSort, setCurrentSort] = React.useState<"name" | "test">("name");
+    const [clubs, setClubs] = React.useState<Club[]>();
+    const [currentSort, setCurrentSort] = React.useState<"name" | "value">(() => {
+        return localStorage.getItem("currentSort") as "name" | "value" || "name";
+    });
     // const pushRoute = usePushRoute();
 
     const isRehydrated = useAuthStore.persist.hasHydrated();
@@ -33,15 +45,23 @@ export const AllClubsPage = () => {
     // const setIsLoading = useGeneralStore((state) => state.setIsLoading);
 
     const handleSort = () => {
-        switch (currentSort) {
-            case "name": 
-                console.log('sort by name')
-                break;
-            case "test":
-                console.log('sort by smth else')
-                break;
+        if (clubs) {
+            switch (currentSort) {
+                case "name": 
+                    const sortedByName = [...clubs].sort((a, b) => a.name.localeCompare(b.name));
+                    setClubs(sortedByName);
+                    break;
+                case "value":
+                    const sortedByValue = [...clubs].sort((a, b) => a.value - b.value);
+                    setClubs(sortedByValue);
+                    break;
+                default:
+                    // Default to sorting by name if currentSort is undefined or unexpected
+                    const defaultSorted = [...clubs].sort((a, b) => a.name.localeCompare(b.name));
+                    setClubs(defaultSorted);
+                    break;
+            }
         }
-
         // setIsLoading(true);
         // setError("");
 
@@ -58,32 +78,22 @@ export const AllClubsPage = () => {
     };
 
     const changeSortType = () => {
-        switch (currentSort) {
-            case "name": 
-                setCurrentSort('test')
-                break;
-            case "test":
-                setCurrentSort('name');
-                break;
-            default:
-                setCurrentSort('name');
-                break;
-        }
+        setCurrentSort((prevSort) => {
+            const newSort = prevSort === "name" ? "value" : "name";
+            localStorage.setItem("currentSort", newSort);
+            return newSort;
+        });
     }
 
     const fetchData = async () => {
         try {
-            const url =  import.meta.env.VITE_API_BASE_URL + '/hiring/clubs.json';
-            const res = await axios.get(url);
-            console.log('data:',res?.data)
-            setClubs(res?.data);
+            const data = await fetchClubsData();
+            setClubs(data);
+            console.log('d', data);
         } catch (error) {
-            console.error('error:' ,error);
-            if (error instanceof AxiosError) {
-                // setError(`${t("screen.login.error_during_login")}: ${error.response?.status}`);
-            }
+            console.error('Fetching clubs data failed:', error);
         }
-    }
+    };
 
     React.useEffect(() => {
         fetchData();

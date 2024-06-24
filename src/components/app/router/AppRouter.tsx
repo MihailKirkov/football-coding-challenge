@@ -44,7 +44,7 @@ export const AppRouter = () => {
                         </Route>
 
                         {/* Route for /:clubIndex */}
-                        <Route path="/:clubIndex" element={<ClubPage />}>
+                        <Route path="detailsview/:clubId" element={<ClubPage />}>
                         </Route>
 
                         {/* Fallback route for 404 Not Found */}
